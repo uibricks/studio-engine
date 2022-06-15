@@ -1,0 +1,19 @@
+syntax = "proto3";
+package service;
+option go_package = "github.com/uibricks/studio-engine/internal/pkg/proto/service";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "expression/expression.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.populate_all) = true;
+option (gogoproto.equal_all) = true;
+option (gogoproto.testgen_all) = true;
+option (gogoproto.benchgen_all) = true;
+
+service ExpressionService{
+  rpc EvalExpression (expression.EvalExpressionRequest) returns (expression.EvalExpressionResponse);
+}

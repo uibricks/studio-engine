@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package project;
+
+option go_package = "github.com/uibricks/studio-engine/internal/pkg/proto/project";
+
+message Styles {
+    map<string,string> web = 1;
+    map<string,string> mobile = 2;
+    map<string,string> tab = 3;
+}
+
+message mapping {
+    string expressionId = 1;
+    string repoId = 2;
+    string type = 3;
+    string method = 4;
+}
+
+message Data {
+    int32 currentStep = 1;
+}
+
+message Location {
+    int32 id = 1;
+    string title = 2;
+    bool selected = 3;
+    string key = 4;
+}
+
+message Props {
+    string placeholder = 1;
+    repeated mapping dataMapping = 2;
+    string label = 3;
+    string initialValue = 4;
+    string defaultValue = 5;
+    string source = 6;
+    string altText = 7;
+    repeated Location location = 8;
+    Data data = 9;
+}
+
+message Component {
+    string type = 1;
+    string id = 2;
+    Props props = 3;
+    Styles styles = 4;
+    repeated Component children = 5;
+    repeated mapping dataMappings = 6;
+    string name = 7;
+    string route = 8;
+    string createdAt = 9;
+    string updatedAt = 10;
+}
+message Config {
+    map<string,Component> components = 1;
+}
+
+message Object{
+    int32 id = 1;
+    string name = 2;
+    enum Type{
+        UNKNOWN_TYPE=0;
+        PROJECT=1;
+        FOLDER=2;
+    }
+    Type type = 3;
+    string parent_id = 4;
+    string client_id = 5;
+    Config config = 6;
+    string created_at = 7;
+    string updated_at = 8;
+    string deleted_at = 9;
+    int32 created_by = 10;
+    int32 updated_by = 11;
+    string state = 12;
+    int32 version = 13;
+    string user_version = 14;
+    string luid = 15;
+}
+
+message ProjectRequest{
+    Object project = 1;
+    bool new_project = 2;
+}
+
+message SaveProjectRequest {
+    string luid = 1;
+    string userVersion = 2;
+}
+
+message SaveProjectResponse {
+    string luid = 1;
+    string status = 2;
+    string updated_at = 3;
+}
+
+message ProjectLuidRequest{
+    string luid = 1;
+}
+
+message ProjectResponse{
+    Object project = 1;
+}
+
+message ProjectsRequest{
+    int32 parent_id = 1;
+    string type = 2;
+}
+
+message ProjectsResponse{
+    repeated Object projects = 1;
+}
+
+message DeleteProjectResponse {
+    string luid = 1;
+    string deleted_at = 3;
+}
+
+message Version {
+    string user_version = 1;
+    int32 version = 2;
+    string created_at = 3;
+    string updated_at = 4;
+    int32 created_by = 5;
+    int32 updated_by = 6;
+    string state = 7;
+}
+
+message ProjectVersionsResponse {
+    repeated Version versions = 1;
+}
+
+message RestoreProjectResponse {
+    string updated_at = 1;
+    string status = 2;
+}
+
+message DeleteComponentRequest {
+    string project_id = 1;
+    string component_id = 2;
+}
+
+message ComponentDependency {
+  string id = 1;
+  string name = 2;
+}
+
+message DeleteComponentResponse {
+    string project_id = 1;
+    string updated_at = 2;
+    repeated Component components = 3;
+    repeated ComponentDependency componentDependencies = 4;
+}

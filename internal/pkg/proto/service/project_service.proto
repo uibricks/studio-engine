@@ -1,0 +1,48 @@
+syntax = "proto3";
+package service;
+option go_package = "github.com/uibricks/studio-engine/internal/pkg/proto/service";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "project/project.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.populate_all) = true;
+option (gogoproto.equal_all) = true;
+option (gogoproto.testgen_all) = true;
+option (gogoproto.benchgen_all) = true;
+
+service ProjectService{
+
+  // rpc unary
+  // updates project for the specified project in the cache, if the project doesn't exist then create a new cache
+  rpc UpdateProject (project.ProjectRequest) returns (project.ProjectResponse);
+
+  // rpc unary
+  // persists project details to DB and clears it from cache
+  rpc SaveProject (project.SaveProjectRequest) returns (project.SaveProjectResponse);
+
+  // rpc unary
+  // gets project from cache/db by its luid
+  rpc GetProject (project.ProjectLuidRequest) returns (project.ProjectResponse);
+
+  // rpc unary
+  // gets all projects by its type and parentId
+  rpc GetProjects (project.ProjectsRequest) returns (project.ProjectsResponse);
+
+  // rpc unary
+  // deletes project from db and cache
+  // permanently deletes project if marked deleted already, by moving it to history table
+  rpc DeleteProject (project.ProjectLuidRequest) returns (project.DeleteProjectResponse);
+
+  // rpc unary
+  rpc GetProjectVersions (project.ProjectLuidRequest) returns (project.ProjectVersionsResponse);
+
+  // rpc unary
+  // restores a project by clearing deleted_at
+  rpc RestoreProject (project.ProjectLuidRequest) returns (project.RestoreProjectResponse);
+
+  rpc DeleteComponent(project.DeleteComponentRequest) returns (project.DeleteComponentResponse);
+}

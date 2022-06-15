@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package expression;
+
+option go_package = "github.com/uibricks/studio-engine/internal/pkg/proto/expression";
+
+message Menu{
+    string id = 1;
+    string name = 2;
+    string type = 3;
+    repeated Menu children = 4;
+}
+
+message Refs {
+  repeated string path = 1;
+  string type = 2;
+}
+
+message Expression{
+   string name = 1;
+   string type = 2;
+   string raw = 3;
+   map<string,Refs> refs = 4;
+   repeated string nestedRefs = 5;
+   string id = 6;
+}
+
+message EvalExpressionRequest {
+   repeated Menu expressionMenu=1;
+   map<string,Expression> expressions=2;
+   string data = 3;
+}
+
+message EvalExpressionResponse {
+   string expressionResult = 1;
+}

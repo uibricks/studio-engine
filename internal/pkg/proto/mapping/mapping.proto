@@ -1,0 +1,243 @@
+syntax = "proto3";
+
+package mapping;
+
+option go_package = "github.com/uibricks/studio-engine/internal/pkg/proto/mapping";
+
+message Menu{
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  repeated Menu children = 4;
+  repeated string config = 5;
+}
+
+message Refs{
+  repeated string path = 1;
+  string type = 2;
+}
+
+message Expression{
+  string name = 1;
+  string type = 2;
+  string raw = 3;
+  map<string,Refs> refs = 4;
+  repeated string nestedRefs = 5;
+  string id = 6;
+}
+
+message QueryParams{
+  string key = 1;
+  string value = 2;
+  bool checked = 3;
+  bool prompt = 4;
+  bool includeInPath=5;
+}
+
+message Headers{
+  string key = 1;
+  string value = 2;
+  bool checked = 3;
+  bool prompt = 4;
+}
+
+message Authentication{
+  string type = 1;
+}
+
+message Form {
+  string key = 1;
+  string value = 2;
+}
+
+message Value {
+  repeated string path = 1;
+}
+
+message FormKey {
+  string key = 1;
+  Value value = 2;
+  string type = 3;
+  repeated FormKey children = 4;
+}
+
+message Json {
+  repeated FormKey formKeys = 1;
+  string schema = 2;
+  string schemaType = 3;
+  string schemaRepo = 4;
+}
+
+message Body {
+  repeated Form form = 1;
+  Json json = 2;
+  string type = 3;
+}
+
+message Repository {
+  string httpMethod = 1;
+  string url = 2;
+  repeated QueryParams queryParams=3;
+  repeated Headers headers=4;
+  repeated Menu expressionMenu=5;
+  map<string,Expression> expressions=6;
+  Authentication authentication = 7;
+  Body body=8;
+}
+
+message Environment{
+  string id = 1;
+  string name = 2;
+}
+
+message EnvironmentVariable{
+  string id = 1;
+  string name = 2;
+  map<string, string> environments = 3;
+}
+
+message Config{
+  repeated Menu repositoryMenu = 1;
+  map<string,Repository> repositories = 2;
+  string defaultEnvironment = 3;
+  repeated Environment environments = 4;
+  repeated EnvironmentVariable environmentVariables = 5;
+}
+
+message Repositories{
+  int32 id = 1;
+  string projectId = 2;
+  Config config = 3;
+  string createdAt = 4;
+  string deletedAt = 6;
+  int32 projectVersion = 7;
+}
+
+message MappingRequest{
+  string projectId = 1;
+  bool includeMenu = 2;
+  bool includeEnvs = 3;
+  repeated string repositoryIds = 4;
+  int32 projectVersion = 5;
+}
+
+message MappingResponse{
+  Config config = 1;
+}
+
+message UpdateRepositoryRequest{
+  string projectId = 1;
+  repeated Menu repositoryMenu = 2;
+  map<string,Repository> repositories = 3;
+  bool emptyRepositoryMenu = 4;
+  int32 projectVersion = 5;
+}
+
+message UpdateRepositoryResponse{
+  string projectId = 1;
+  repeated Menu repositoryMenu = 2;
+  map<string,Repository> repositories = 3;
+  string updatedAt =4;
+}
+
+message UpdateEnvRequest{
+  string projectId = 1;
+  string defaultEnvironment = 2;
+  repeated Environment environments = 3;
+  repeated EnvironmentVariable environmentVariables = 4;
+  bool emptyEnvironments = 5;
+  bool emptyEnvironmentVariables = 6;
+  int32 projectVersion = 7;
+}
+
+message UpdateEnvResponse{
+  string projectId = 1;
+  string UpdatedAt = 2;
+  string defaultEnvironment = 3;
+  repeated Environment environments = 4;
+  repeated EnvironmentVariable environmentVariables = 5;
+}
+
+message DeleteRepositoryRequest{
+  string projectId = 1;
+  string repositoryId = 3;
+  int32 projectVersion = 4;
+}
+
+message Dependency{
+  string id = 1;
+  string name = 2;
+}
+
+message DeleteRepositoryResponse{
+  string projectId = 1;
+  string UpdatedAt = 2;
+  repeated Menu repositoryMenu = 3;
+  repeated Dependency dependencies = 4;
+}
+
+message SaveMappingRequest{
+  string projectId = 1;
+  int32 newProjectVersion = 2;
+  int32 currProjectVersion = 3;
+}
+
+message SaveMappingResponse{
+  string projectId = 1;
+  string createdAt = 2;
+}
+
+message DeleteMappingRequest{
+  string projectId = 1;
+  int32 cachedProjectVersion = 2;
+}
+
+message DeleteMappingResponse{
+  string projectId = 1;
+  string deletedAt = 2;
+}
+
+message UpdateResponse{
+  string projectId = 1;
+  string UpdatedAt = 2;
+}
+
+message ResolveExpressionsRequest {
+  string projectId = 1;
+  string repositoryId = 2;
+  repeated Menu expressionMenu=3;
+  int32 projectVersion = 4;
+  map<string,string> prompts = 5;
+}
+
+message ResolveExpressionsResponse {
+  string expressionResult = 1;
+}
+
+message ExecuteApiRequest {
+  string httpMethod = 1;
+  string url = 2;
+  repeated QueryParams queryParams=3;
+  repeated Headers headers=4;
+  string body=5;
+  repeated string sslCert=6;
+  string caCert=7;
+  repeated Menu expressionMenu=8;
+  map<string,Expression> expressions=9;
+}
+
+message ExecuteApiResponse {
+  string statusCode = 1;
+  string responseBody = 2;
+  string responseHeaders = 3;
+  string expressionResult = 4;
+}
+
+message RestoreMappingRequest {
+  string projectId = 1;
+}
+
+message RestoreMappingResponse {
+  string status = 1;
+}
+

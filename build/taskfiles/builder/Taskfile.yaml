@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+
+  pull:
+    cmds:
+      - cmd: docker pull $DOCKER_REGISTRY/builder:latest
+        ignore_error: true
+
+  package:
+    cmds:
+      - docker build --target builder --file build/docker/builder/Dockerfile -t $DOCKER_REGISTRY/builder:latest --cache-from=$DOCKER_REGISTRY/builder:latest .
+
+  publish:
+    cmds:
+      - task: pull
+      - task: package
+      - docker push $DOCKER_REGISTRY/builder:latest

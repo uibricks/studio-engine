@@ -1,0 +1,78 @@
+version: '3'
+
+env:
+  ENV: Local
+
+includes:
+  builder: ./build/taskfiles/builder/Taskfile.yaml
+  project: ./build/taskfiles/project/Taskfile.yaml
+  mapping: ./build/taskfiles/mapping/Taskfile.yaml
+
+tasks:
+  deps:
+    cmds:
+      - go mod download
+
+  test:
+    desc: "Test apps with coverage (parallel)"
+    deps: [ pkg:test, project:test, mapping:test]
+    cmds:
+      - cmd: " [ $ENV = 'Local' ] && exit 0 || rm -rf .task/checksum/*-test"
+    silent: true
+
+  prep:test:
+    desc: "Prepare artifacts for integration test (sequential)"
+    cmds:
+      - task: integration:prep
+
+  test:seq:
+    desc: "Test apps with coverage (sequential)"
+    cmds:
+      - task: pkg:test
+      - task: project:test
+      - task: mapping:test
+
+  compile:
+    desc: "Create go binaries for all apps (parallel)"
+    deps: [ project:compile, mapping:compile ]
+    cmds:
+      - cmd: " [ $ENV = 'Local' ] && exit 0 || rm -rf ./build/out/*"
+    silent: true
+
+  build:
+    desc: "Test and compile all apps (parallel)"
+    deps: [ project:build, mapping:build ]
+    cmds:
+      - cmd: exit 0
+    silent: true
+
+  package:
+    desc: "Create docker images for all apps (parallel)"
+    deps: [ project:package, mapping:package ]
+    cmds:
+      - cmd: exit 0
+    silent: true
+
+  publish:
+    desc: "Push docker images to registry (parallel)"
+    deps: [ project:publish, mapping:publish ]
+    cmds:
+      - cmd: exit 0
+    silent: true
+
+  clean-cache:
+    desc: "Clear all task cache"
+    cmds:
+      - rm -rf .task
+
+  clean-builds:
+    desc: "Clear all binaries"
+    cmds:
+      - rm -rf ./build/out
+
+  prune:
+    desc: "Clear all"
+    cmds:
+      - task: clean-cache
+      - task: clean-builds
+

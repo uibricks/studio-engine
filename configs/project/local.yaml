@@ -1,0 +1,19 @@
+app:
+  service_addr: "0.0.0.0:50054"
+db:
+  url: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+  schema: "project"
+redis:
+  host: "localhost"
+  port: "6379"
+  pwd: ""
+  db: "0"
+rabbitMq:
+  host: "localhost"
+  port: "5672"
+  user: "guest"
+  pwd: "guest"
+  orchestrator_queue_name: "orchestrator_queue"
+  mapping_queue_name: "mapping_queue"
+prometheus:
+  port: "2112"

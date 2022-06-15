@@ -1,0 +1,41 @@
+version: '3'
+
+tasks:
+  compile:
+    cmds:
+      - go build -o ./build/out/project -a -tags musl -ldflags "-X log.Version={{.APP_VERSION}} -X log.Commit={{.GIT_COMMIT}}" cmd/project/main.go
+    sources:
+      - ./internal/app/project/**/*.go
+      - ./internal/pkg/**/*.go
+      - ./cmd/project/**/*.go
+    generates:
+      - ./build/out/project
+    vars:
+      APP_VERSION: 0.0.1
+      GIT_COMMIT:
+        sh: git rev-parse HEAD
+
+  test:
+    dir: ./internal/app/project
+    cmds:
+      - gotestsum --format=testname  --packages ./... -- -short -coverprofile=coverage.out ./...
+    sources:
+      - ./**/*.go
+    generates:
+      - coverage.out
+
+  build:
+    deps: [ test, compile ]
+    cmds:
+      - cmd: exit 0
+    silent: true
+
+  package:
+    cmds:
+      - cmd: docker pull $DOCKER_REGISTRY/builder:latest
+        ignore_error: true
+      - docker build --file build/docker/project/Dockerfile -t $DOCKER_REGISTRY/project:latest -t $DOCKER_REGISTRY/project:$IMAGE_TAG --cache-from=$DOCKER_REGISTRY/builder:latest .
+
+  publish:
+    cmds:
+      - docker push $DOCKER_REGISTRY/project:$IMAGE_TAG

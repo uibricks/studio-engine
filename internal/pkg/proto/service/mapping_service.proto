@@ -1,0 +1,58 @@
+syntax = "proto3";
+package service;
+option go_package = "github.com/uibricks/studio-engine/internal/pkg/proto/service";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "mapping/mapping.proto";
+
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.populate_all) = true;
+option (gogoproto.equal_all) = true;
+option (gogoproto.testgen_all) = true;
+option (gogoproto.benchgen_all) = true;
+
+//this service holds the data mapping info for each project which contains info for repository_menu, repositories and environment_variables
+service MappingService{
+
+  // This rpc returns the mapping info at project level
+  // error handling
+  // return NOT_FOUND if project not found
+  rpc GetMapping (mapping.MappingRequest) returns (mapping.MappingResponse);
+
+  // unary rpc, updates the requested repository in cache. A new cache
+  // will be created if it doesn't exist
+  // error handling
+  // return NOT_FOUND if repository not found
+  rpc SaveMapping (mapping.SaveMappingRequest) returns (mapping.SaveMappingResponse);
+
+  // unary rpc, delete the mapping in cache as well as in DB for a given project id.
+  // error handling
+  // return NOT_FOUND if mapping not found for the given project id.
+  rpc DeleteMapping (mapping.DeleteMappingRequest) returns (mapping.DeleteMappingResponse);
+
+  // unary rpc, delete the requested repository in cache. A new cache
+  // will be created if it doesn't exist. And also checks the dependency of the requested
+  // repository in other objects
+  // error handling
+  // return NOT_FOUND if repository not found
+  rpc DeleteRepository (mapping.DeleteRepositoryRequest) returns (mapping.DeleteRepositoryResponse);
+
+  // unary rpc, updates repository menu and repositories for the specified project
+  // error handling
+  // returns NOT_FOUND if project not found
+  rpc UpdateRepositoryDetails (mapping.UpdateRepositoryRequest) returns (mapping.UpdateRepositoryResponse);
+
+  // unary rpc, updates repository menu for the specified project
+  // error handling
+  // returns NOT_FOUND if project not found
+  rpc UpdateEnvironment (mapping.UpdateEnvRequest) returns (mapping.UpdateEnvResponse);
+
+  rpc ExecuteAPI (mapping.ExecuteApiRequest) returns (mapping.ExecuteApiResponse);
+  rpc ResolveExpressions (mapping.ResolveExpressionsRequest) returns (mapping.ResolveExpressionsResponse);
+
+  // unary rpc, restores repository by clearing deleted_at
+  rpc RestoreMapping (mapping.RestoreMappingRequest) returns (mapping.RestoreMappingResponse);
+}
